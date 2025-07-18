@@ -1,6 +1,14 @@
 import streamlit as st
 import os
 
+import sys
+
+# Make sure you can import from backend
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'backend')))
+
+from database import users_collection
+
+
 # Set page configuration (must be the first Streamlit command)
 st.set_page_config(
     page_title="FitAI App",
@@ -40,7 +48,7 @@ if not st.session_state['user_profile']:
 
             submitted = st.form_submit_button("Save Profile")
             if submitted:
-                st.session_state['user_profile'] = {
+                profile_data = {
                     "name": name,
                     "age": age,
                     "gender": gender,
@@ -48,8 +56,16 @@ if not st.session_state['user_profile']:
                     "height": height,
                     "activity_level": activity_level
                 }
+
+                st.session_state['user_profile'] = profile_data
+
+                # Save to MongoDB
+                users_collection.insert_one(profile_data)
+
                 st.success("Profile saved successfully! You can now explore your personalized modules.")
-                st.experimental_rerun() # Rerun to update dashboard view
+                st.rerun()
+
+            # Rerun to update dashboard view
 else:
     st.subheader(f"Welcome back, {st.session_state['user_profile'].get('name', 'User')}!")
     st.write("Here's a quick overview of your modules and progress:")

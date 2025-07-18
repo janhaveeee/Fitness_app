@@ -1,0 +1,7 @@
+streamlit
+pandas
+scikit-learn
+mediapipe
+flask
+pymongo
+python-dotenv
